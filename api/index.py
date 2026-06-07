@@ -8,21 +8,25 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["POST"],
+    allow_credentials=False,
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
 with open("telemetry.json") as f:
     DATA = json.load(f)
 
+
 @app.post("/")
 async def analyze(payload: dict):
+
     regions = payload["regions"]
     threshold = payload["threshold_ms"]
 
     result = {}
 
     for region in regions:
+
         rows = [r for r in DATA if r["region"] == region]
 
         latencies = [r["latency_ms"] for r in rows]
