@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 import json
 import numpy as np
 
@@ -9,7 +8,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -17,29 +16,14 @@ app.add_middleware(
 with open("telemetry.json") as f:
     DATA = json.load(f)
 
-
-@app.options("/api/latency")
-async def options_latency():
-    return JSONResponse(
-        content={},
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST, OPTIONS",
-            "Access-Control-Allow-Headers": "*",
-        },
-    )
-
-
 @app.post("/api/latency")
 async def analyze(payload: dict):
-
     regions = payload["regions"]
     threshold = payload["threshold_ms"]
 
     result = {}
 
     for region in regions:
-
         rows = [r for r in DATA if r["region"] == region]
 
         latencies = [r["latency_ms"] for r in rows]
